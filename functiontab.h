@@ -15,6 +15,9 @@ public:
     explicit FunctionTab(QWidget *parent = 0);
     ~FunctionTab();
     
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::FunctionTab *ui;
 };

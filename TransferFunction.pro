@@ -14,10 +14,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    functiontab.cpp
+    functiontab.cpp \
+    ctoken.cpp \
+    cpoly.cpp
 
 HEADERS  += mainwindow.h \
-    functiontab.h
+    functiontab.h \
+    ctoken.h \
+    cpoly.h
 
 FORMS    += mainwindow.ui \
     functiontab.ui

@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->tabWidget->clear();
     ui->tabWidget->addTab(new FunctionTab(ui->tabWidget),QString("har"));
+    MainWindow::instance = this;
 }
 
 MainWindow::~MainWindow()
@@ -19,4 +20,12 @@ MainWindow::~MainWindow()
 void MainWindow::on_action_new_Transfer_Function_triggered()
 {
     ui->tabWidget->addTab(new FunctionTab(ui->tabWidget),QString("har"));
+
 }
+
+void MainWindow::dbg(QString msg)
+{
+    ui->console->appendPlainText(msg);
+}
+
+MainWindow* MainWindow::instance = NULL;
