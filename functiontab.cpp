@@ -27,7 +27,7 @@ void FunctionTab::on_numerator_text_textChanged(const QString &arg1)
     if(arg1.isEmpty())
         return;
     QChar last = arg1[arg1.size()-1];
-    QString s_constant ="";
+
     double constant = 1;
 
     switch(numerator_state)

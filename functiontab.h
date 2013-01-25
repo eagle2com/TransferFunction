@@ -32,7 +32,7 @@ private:
     std::vector<CPoly*> m_numerator;
     std::vector<CPoly*> m_denominator;
 
-
+     QString s_constant;
 
 };
 
