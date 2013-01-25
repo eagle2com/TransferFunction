@@ -5,8 +5,9 @@ class CToken
 {
 public:
     CToken(double c, int p);
+    CToken* operator* (CToken* t1);
 
-private:
+protected:
     double m_c; //multiplier constant
     int m_p; //power constant
 };

@@ -52,7 +52,7 @@
     <string>denominator</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="numerator_text">
    <property name="geometry">
     <rect>
      <x>60</x>
@@ -62,7 +62,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
+  <widget class="QLineEdit" name="denominator_text">
    <property name="geometry">
     <rect>
      <x>60</x>
@@ -75,4 +75,8 @@
  </widget>
  <resources/>
  <connections/>
+ <slots>
+  <slot>numerator_changed()</slot>
+  <slot>denominator_changed()</slot>
+ </slots>
 </ui>
