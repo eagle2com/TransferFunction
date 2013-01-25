@@ -24,15 +24,26 @@ private slots:
 
     void on_numerator_text_textChanged(const QString &arg1);
 
+    void on_reset_button_clicked();
+
 private:
     Ui::FunctionTab *ui;
     int numerator_state;
-    int denomintator_state;
+    int denominator_state;
 
     std::vector<CPoly*> m_numerator;
     std::vector<CPoly*> m_denominator;
 
      QString s_constant;
+     QString p_constant;
+
+     CToken* current_token;
+     CPoly* current_poly;
+
+     bool token_had_point;
+
+     void NumeratorInvalid(QChar last);
+     void FinishedNumPoly();
 
 };
 
