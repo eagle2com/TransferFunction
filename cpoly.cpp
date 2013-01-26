@@ -11,7 +11,7 @@ CPoly::CPoly()
 void CPoly::Add(CToken* t1)
 {
     t1->CheckSign();
-    MainWindow::Debug(QString("[CPoly] add token: %1").arg(t1->ToLatex()));
+    MainWindow::Debug(QString("[CPoly] add token: %1").arg(t1->ToLatex(false)));
     TokenMapIt it = m_tokens.find(t1->m_p);
     if(it != m_tokens.end())        //does the specific power already exist in the polynom?
     {
@@ -36,10 +36,16 @@ QString CPoly::ToLatex()
     for(TokenMapIt it = m_tokens.begin();it != m_tokens.end();++it)
     {
         count++;
-        ret.append(it->second->ToLatex());
+        if(it->second->m_c > 0 && count > 1)
+        {
+            ret.append('+');
+        }
+        else if(it->second->m_c <0)
+            ret.append('-');
+        ret.append(it->second->ToLatex(count==1));
         if(count < size)
         {
-            ret.append(" + ");
+            ret.append(" ");
         }
     }
     ret.append(")");
@@ -58,4 +64,10 @@ CPoly* CPoly::operator *(CPoly& p1)
         }
     }
     return ret;
+}
+
+
+bool CPoly::isEmpty()
+{
+    return m_tokens.empty();
 }

@@ -45,6 +45,8 @@ private slots:
 
     void on_numerator_text_returnPressed();
 
+    void on_denominator_text_returnPressed();
+
 private:
     Ui::FunctionTab *ui;
     int numerator_state;
@@ -61,16 +63,19 @@ private:
 
      void NumeratorInvalid(QChar last);
      void DenominatorInvalid(QChar last);
-     void FinishedNumPoly();
-     void FinishedDenPoly();
+
      bool AnalyzeNumChar(QChar c);     //returns true if valid (not ERROR)
+     bool AnalyzeDenChar(QChar c);
 
      int TransitionNum(int t);
+     int TransitionDen(int t);
      int ClassifyChar(QChar c);
 
      QString StateName(int s);
 
      int sign;
+
+     void PrettyPrintInput();
 };
 
 #endif // FUNCTIONTAB_H

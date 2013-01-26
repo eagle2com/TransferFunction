@@ -15,6 +15,7 @@ public:
     void Add(CToken* t1);
     CPoly* operator*(CPoly& p1);
     QString ToLatex();
+    bool isEmpty();
 
 protected:
     TokenMap m_tokens;

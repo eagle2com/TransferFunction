@@ -1,5 +1,6 @@
 #include "ctoken.h"
 #include "exception"
+#include <cmath>
 
 ///TODO: add CToken garbage collector
 
@@ -28,26 +29,24 @@ CToken* CToken::operator+ (const CToken& t1)
     return t3;
 }
 
-QString CToken::ToLatex()
+QString CToken::ToLatex(bool first)
 {
+    MainWindow::Debug(QString("c: %1   p: %2").arg(m_c).arg(m_p));
     QString ret = "";
-    if(m_c == 0)
-        return ret;
-    if(m_c != 1)
+    if(abs(m_c) != 1 ||m_p == 0 )
     {
-        ret.append(QString("%1").arg(m_c));
+        ret.append(QString("%1").arg(abs(m_c)));
     }
-    if(m_c == 1 && m_p == 0)
+   /* if(m_p == 0)
     {
-        ret.append('1');
-    }
+        ret.append(QString("%1").arg(abs(m_c)));
+    }*/
+
     if(m_p > 0)
-    {
-        ret.append("s");
-    }
+        ret.append('s');
+
     if(m_p > 1)
-    {
-        ret.append(QString("^{%1}").arg(m_p));
-    }
+        ret.append(QString("^%1").arg(m_p));
+
     return ret;
 }

@@ -21,23 +21,30 @@ FunctionTab::~FunctionTab()
 
 void FunctionTab::on_pushButton_clicked()
 {
+   PrettyPrintInput();
+}
+
+void FunctionTab::PrettyPrintInput()
+{
     QString num_latex = "";
     QString den_latex = "";
 
     for(int i = 0; i < m_numerator.size(); i++)
     {
-        num_latex.append(m_numerator[i]->ToLatex());
+        if(!m_numerator[i]->isEmpty())
+            num_latex.append(m_numerator[i]->ToLatex());
     }
     for(int i = 0; i < m_denominator.size(); i++)
     {
-        den_latex.append(m_denominator[i]->ToLatex());
+        if(!m_denominator[i]->isEmpty())
+            den_latex.append(m_denominator[i]->ToLatex());
     }
     MainWindow::Debug(QString("num: %1").arg(num_latex));
     MainWindow::Debug(QString("den: %1").arg(den_latex));
 
     QString total_latex = "\\frac{"+num_latex+"}{"+den_latex+"}";
     QString command = "tex2png -c \" $  "+total_latex+" $\" -T -s 2000 -o input.png";
-     MainWindow::Debug(QString("exec: %1").arg(command));
+    MainWindow::Debug(QString("exec: %1").arg(command));
 
 
     QProcess process;//, QStringList() << docPath
@@ -48,6 +55,7 @@ void FunctionTab::on_pushButton_clicked()
     //process.waitForFinished();
     ui->input_label->setPixmap(QPixmap("input.png"));
 }
+
 
 void FunctionTab::on_numerator_text_textChanged(const QString &arg1)
 {
@@ -60,6 +68,193 @@ void FunctionTab::on_numerator_text_textChanged(const QString &arg1)
         if(!AnalyzeNumChar(arg1[i]))
             break;
     }
+}
+
+void FunctionTab::on_denominator_text_textChanged(const QString &arg1)
+{
+    sign = 1;
+    MainWindow::ClearDebug();
+    m_denominator.clear();
+    denominator_state = IDLE;
+    for(int i = 0; i < arg1.size(); i++)
+    {
+        if(!AnalyzeDenChar(arg1[i]))
+            break;
+    }
+}
+
+bool FunctionTab::AnalyzeDenChar(QChar c)
+{
+    int type = ClassifyChar(c);
+    //MainWindow::Debug(QString("type: ").arg())
+
+    if(type == ERROR)
+    {
+        DenominatorInvalid(c);
+        return false;
+    }
+
+    int transition = TransitionDen(type);
+    MainWindow::Debug(QString("%1 -> %2").arg(StateName(denominator_state),StateName(transition)));
+    if(transition == ERROR)
+    {
+        DenominatorInvalid(c);
+        return false;
+    }
+
+
+    switch(denominator_state)
+    {
+    case IDLE:
+        switch(transition)
+        {
+        case POLY:
+            current_poly = new CPoly();
+            sign = 1;
+            break;
+        default:
+            DenominatorInvalid(c);
+            return false;
+            break;
+        }
+        break;
+
+    case POLY:
+        switch(transition)
+        {
+        case TOKEN_INT:
+            current_token = new CToken;
+            cst_string = c;
+            current_token->SetSign(sign);
+            break;
+        case TOKEN_DEC:
+            current_token = new CToken;
+            cst_string = c;
+            break;
+        case IDLE:
+            m_denominator.push_back(current_poly);
+            break;
+        case VAR:
+            current_token = new CToken;
+            current_token->m_c = 1;
+            current_token->SetSign(sign);
+            break;
+        default:
+            DenominatorInvalid(c);
+            return false;
+            break;
+        }
+        break;
+
+    case TOKEN_INT:
+        switch(transition)
+        {
+        case TOKEN_INT:
+            cst_string.append(c);
+            break;
+        case POLY:
+            current_token->m_c = cst_string.toDouble();
+            current_poly->Add(current_token);
+            break;
+        case TOKEN_DEC:
+            cst_string.append(c);
+            break;
+        case IDLE:
+            current_token->m_c = cst_string.toDouble();
+            current_poly->Add(current_token);
+            m_denominator.push_back(current_poly);
+            break;
+        case VAR:
+            current_token->m_c = cst_string.toDouble();
+            if(cst_string[0]== '-' || cst_string[0]=='+')
+                current_token->m_c = 1;
+            break;
+        default:
+            DenominatorInvalid(c);
+            return false;
+            break;
+        }
+        break;
+
+    case TOKEN_DEC:
+        switch(transition)
+        {
+        case TOKEN_DEC:
+            cst_string.append(c);
+            break;
+        case POLY:
+            current_token->m_c = cst_string.toDouble();
+            current_poly->Add(current_token);
+            break;
+        case IDLE:
+            current_token->m_c = cst_string.toDouble();
+            current_poly->Add(current_token);
+            m_denominator.push_back(current_poly);
+            break;
+        case VAR:
+            current_token->m_c = cst_string.toDouble();
+            break;
+        default:
+            DenominatorInvalid(c);
+            return false;
+            break;
+        }
+        break;
+
+    case VAR:
+        switch(transition)
+        {
+        case POLY:
+            current_token->m_p = 1;
+            current_poly->Add(current_token);
+            break;
+        case EXP:
+            pwr_string = c;
+            break;
+        case IDLE:
+            current_token->m_p = 1;
+            current_poly->Add(current_token);
+            m_denominator.push_back(current_poly);
+            break;
+
+        default:
+            DenominatorInvalid(c);
+            return false;
+            break;
+        }
+        break;
+
+    case EXP:
+        switch(transition)
+        {
+        case EXP:
+            pwr_string.append(c);
+            break;
+        case POLY:
+            current_token->m_p = pwr_string.toInt();
+            current_poly->Add(current_token);
+            break;
+        case IDLE:
+            current_token->m_p = pwr_string.toInt();
+            current_poly->Add(current_token);
+            m_denominator.push_back(current_poly);
+            break;
+        default:
+            DenominatorInvalid(c);
+            return false;
+            break;
+        }
+        break;
+
+    default:
+        MainWindow::Debug("Unknow state");
+        break;
+    }
+
+    denominator_state = transition;
+
+   // MainWindow::Debug("OK");
+    return true;
 }
 
 bool FunctionTab::AnalyzeNumChar(QChar c)
@@ -145,6 +340,9 @@ bool FunctionTab::AnalyzeNumChar(QChar c)
             break;
         case VAR:
             current_token->m_c = cst_string.toDouble();
+            if(cst_string[0]== '-' || cst_string[0]=='+')
+                current_token->m_c = 1;
+
             break;
         default:
             NumeratorInvalid(c);
@@ -239,6 +437,11 @@ int FunctionTab::TransitionNum(int t)
     return state_machine[t][numerator_state];
 }
 
+int FunctionTab::TransitionDen(int t)
+{
+    return state_machine[t][denominator_state];
+}
+
 void FunctionTab::on_reset_button_clicked()
 {
     numerator_state = IDLE;
@@ -248,7 +451,6 @@ void FunctionTab::on_reset_button_clicked()
     m_numerator.clear();
     m_denominator.clear();
 }
-
 
 void FunctionTab::NumeratorInvalid(QChar last)
 {
@@ -264,37 +466,6 @@ void FunctionTab::DenominatorInvalid(QChar last)
     ui->denominator_text->blockSignals(true);
     ui->denominator_text->backspace();
     ui->denominator_text->blockSignals(false);
-}
-
-
-/*
-void FunctionTab::FinishedNumPoly()
-{
-    current_poly->Add(current_token);
-    m_numerator.push_back(current_poly);
-    MainWindow::Debug(QString("finished poly: %1").arg(current_poly->ToLatex()));
-    s_constant = "";
-    p_constant = "",
-    numerator_state = IDLE;
-    current_poly = NULL;
-    current_token = NULL;
-}*/
-
-/*
-void FunctionTab::FinishedDenPoly()
-{
-    current_poly->Add(current_token);
-    m_denominator.push_back(current_poly);
-    MainWindow::Debug(QString("finished poly: %1").arg(current_poly->ToLatex()));
-    s_constant = "";
-    p_constant = "",
-    denominator_state = IDLE;
-    current_poly = NULL;
-    current_token = NULL;
-}*/
-void FunctionTab::on_denominator_text_textChanged(const QString &arg1)
-{
-
 }
 
 int FunctionTab::ClassifyChar(QChar c)
@@ -342,6 +513,11 @@ QString FunctionTab::StateName(int s)
 }
 
 void FunctionTab::on_numerator_text_returnPressed()
+{
+    on_pushButton_clicked();
+}
+
+void FunctionTab::on_denominator_text_returnPressed()
 {
     on_pushButton_clicked();
 }

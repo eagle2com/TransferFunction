@@ -16,7 +16,7 @@ public:
     CToken* operator* (const CToken& t1);
     CToken* operator+ (const CToken& t1);
 
-    QString ToLatex();
+    QString ToLatex(bool first);
     void SetSign(int s)
     {
         sign = s;
