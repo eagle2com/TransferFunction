@@ -5,7 +5,22 @@
 #include <vector>
 #include "cpoly.h"
 
-enum STATE{IDLE,POLY_START,POLY_END, TOKEN_CONSTANT, TOKEN_S, TOKEN_POWER};
+enum STATE{IDLE,POLY,TOKEN_INT,TOKEN_DEC,VAR,EXP};
+enum TRANSITION{DIGIT,SIGN,POINT,OPEN_POLY,CLOSE_POLY,VAR_S,UNUSED};
+#define ERROR -1
+
+const int state_machine[7][6] =
+{/*              IDLE   POLY        TOKEN_INT   TOKEN_DEC   VAR     EXP*/
+/*DIGIT*/       {ERROR, TOKEN_INT,  TOKEN_INT,  TOKEN_DEC,  EXP,    EXP},
+/*SIGN*/        {ERROR, TOKEN_INT,  POLY,       POLY,       POLY,   POLY},
+/*POINT*/       {ERROR, TOKEN_DEC,  TOKEN_DEC,  ERROR,      ERROR,  ERROR},
+/*OPEN_POLY*/   {POLY,  ERROR,      ERROR,      ERROR,      ERROR,  ERROR},
+/*CLOSE_POLY*/  {ERROR, IDLE,       IDLE,       IDLE,       IDLE,   IDLE},
+/*VAR_S*/       {ERROR, VAR,        VAR,        VAR,        ERROR,  ERROR},
+/*UNUSED*/      {ERROR, ERROR,      ERROR,     ERROR,       ERROR,  ERROR},
+};
+
+
 
 namespace Ui {
 class FunctionTab;
@@ -28,6 +43,8 @@ private slots:
 
     void on_denominator_text_textChanged(const QString &arg1);
 
+    void on_numerator_text_returnPressed();
+
 private:
     Ui::FunctionTab *ui;
     int numerator_state;
@@ -36,19 +53,24 @@ private:
     std::vector<CPoly*> m_numerator;
     std::vector<CPoly*> m_denominator;
 
-     QString s_constant;
-     QString p_constant;
+     QString cst_string;
+     QString pwr_string;
 
      CToken* current_token;
      CPoly* current_poly;
-
-     bool token_had_point;
 
      void NumeratorInvalid(QChar last);
      void DenominatorInvalid(QChar last);
      void FinishedNumPoly();
      void FinishedDenPoly();
+     bool AnalyzeNumChar(QChar c);     //returns true if valid (not ERROR)
 
+     int TransitionNum(int t);
+     int ClassifyChar(QChar c);
+
+     QString StateName(int s);
+
+     int sign;
 };
 
 #endif // FUNCTIONTAB_H

@@ -18,10 +18,16 @@ public:
         instance->dbg(msg);
     }
 
+    static void ClearDebug()
+    {
+        instance->clrdbg();
+    }
+
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
     void dbg(QString msg);
+    void clrdbg();
 
 private slots:
     void on_action_new_Transfer_Function_triggered();

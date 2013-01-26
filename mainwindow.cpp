@@ -28,4 +28,9 @@ void MainWindow::dbg(QString msg)
     ui->console->appendPlainText(msg);
 }
 
+void MainWindow::clrdbg()
+{
+    ui->console->clear();
+}
+
 MainWindow* MainWindow::instance = NULL;

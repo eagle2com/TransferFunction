@@ -1,5 +1,6 @@
 #include "cpoly.h"
 #include "ctoken.h"
+#include "mainwindow.h"
 
 CPoly::CPoly()
 {
@@ -9,6 +10,8 @@ CPoly::CPoly()
 
 void CPoly::Add(CToken* t1)
 {
+    t1->CheckSign();
+    MainWindow::Debug(QString("[CPoly] add token: %1").arg(t1->ToLatex()));
     TokenMapIt it = m_tokens.find(t1->m_p);
     if(it != m_tokens.end())        //does the specific power already exist in the polynom?
     {
