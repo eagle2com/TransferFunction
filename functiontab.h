@@ -26,6 +26,8 @@ private slots:
 
     void on_reset_button_clicked();
 
+    void on_denominator_text_textChanged(const QString &arg1);
+
 private:
     Ui::FunctionTab *ui;
     int numerator_state;
@@ -43,7 +45,9 @@ private:
      bool token_had_point;
 
      void NumeratorInvalid(QChar last);
+     void DenominatorInvalid(QChar last);
      void FinishedNumPoly();
+     void FinishedDenPoly();
 
 };
 
