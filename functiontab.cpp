@@ -116,6 +116,7 @@ bool FunctionTab::AnalyzeNumChar(QChar c)
         case VAR:
             current_token = new CToken;
             current_token->m_c = 1;
+            current_token->SetSign(sign);
             break;
         default:
             NumeratorInvalid(c);
