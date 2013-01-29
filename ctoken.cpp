@@ -46,7 +46,7 @@ QString CToken::ToLatex(bool first)
         ret.append('s');
 
     if(m_p > 1)
-        ret.append(QString("^%1").arg(m_p));
+        ret.append(QString("^{%1}").arg(m_p));
 
     return ret;
 }
