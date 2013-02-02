@@ -11,7 +11,8 @@ FunctionTab::FunctionTab(QWidget *parent) :
     ui->setupUi(this);
     numerator_state = IDLE;
     denominator_state = IDLE;
-
+    m_expanded_numerator = NULL;
+    linear_system = NULL;
 }
 
 FunctionTab::~FunctionTab()
@@ -21,10 +22,122 @@ FunctionTab::~FunctionTab()
 
 void FunctionTab::on_pushButton_clicked()
 {
-   PrettyPrintInput();
+    PrettyPrintInput();
+    m_poly_factors.clear();
+    m_poly_denom.clear();
+
+
+    //========= expanding numerator ==============
+    printf("Expanding...\n");
+    if(m_expanded_numerator != NULL)
+        delete m_expanded_numerator;
+
+    m_expanded_numerator = new CPoly();
+    m_expanded_numerator->Add(new CToken(1,0));
+    for(int i = 0; i < m_numerator.size(); i++)
+    {
+        //MainWindow::Debug(QString("%1 x %2").arg(m_expanded_numerator->ToLatex()).arg(m_numerator[i]->ToLatex()));
+        m_expanded_numerator = (*m_expanded_numerator)*(*m_numerator[i]);
+    }
+    double* constants = m_expanded_numerator->GetConstants();
+    MainWindow::Debug(QString("expanded numerator: %1").arg(m_expanded_numerator->ToLatex()));
+
+    //============= computing polynom factors ====================
+    printf("Computing factors...\n");
+    int size_m = 0;
+    for(int i = 0; i < m_denominator.size();i++)
+    {
+        CPoly* poly_factor = new CPoly();
+        poly_factor->Add(new CToken(1,0));
+        for(int n = 0; n < m_denominator.size(); n++)
+        {
+            if(i == n) continue;
+
+            poly_factor = (*poly_factor)*(*m_denominator[n]);
+        }
+        size_m += m_denominator[i]->Order();
+        m_poly_factors.push_back(poly_factor);
+        m_poly_denom.push_back(m_denominator[i]);
+
+        MainWindow::Debug(QString("new poly factor: %1").arg(poly_factor->ToLatex()));
+    }
+    if(linear_system != NULL)
+        delete linear_system;
+    printf("expanded numerator: %s\n",m_expanded_numerator->ToLatex().toStdString().c_str());
+    linear_system = new CLinearSystem(size_m,size_m+1);
+
+    //set the B part of Ax = B
+    for(int n = 0; n < linear_system->N(); n++)
+    {
+        linear_system->Set(n,linear_system->M()-1,constants[n]);
+    }
+
+    //set the A,B,C,D constants
+    int constant_m = 0;
+    //loop through every poly factor
+    for(int i = 0; i < m_poly_factors.size();i++)
+    {
+        double* factor_constants = m_poly_factors[i]->GetConstants();
+        printf("constants: \n");
+        for(int ii = 0; ii < m_poly_factors[i]->Order()+1;ii++)
+        {
+            printf("%1.1f ",factor_constants[ii]);
+        }
+        printf("\n");
+        //loop through every constant multiplier of the poly factor
+        for(int k = 0; k < m_poly_denom[i]->Order();k++)
+        {
+             //loop through every power of the poly factor
+            for(int j=0; j < m_poly_factors[i]->Order()+1;j++)
+            {
+                int power = j+k;
+                double cst = factor_constants[j];
+                printf("setting %1.2f at %d:%d\n",cst,power,constant_m);
+                linear_system->Set(power,constant_m,cst);
+
+            }
+            constant_m++;
+        }
+        delete [] factor_constants;
+    }
+    linear_system->Solve();
+
+    delete [] constants;
 }
 
 void FunctionTab::PrettyPrintInput()
+{
+    QString num_latex = "";
+    QString den_latex = "";
+
+    for(int i = 0; i < m_numerator.size(); i++)
+    {
+        if(!m_numerator[i]->isEmpty())
+            num_latex.append(m_numerator[i]->ToLatex());
+    }
+    for(int i = 0; i < m_denominator.size(); i++)
+    {
+        if(!m_denominator[i]->isEmpty())
+            den_latex.append(m_denominator[i]->ToLatex());
+    }
+    MainWindow::Debug(QString("num: %1").arg(num_latex));
+    MainWindow::Debug(QString("den: %1").arg(den_latex));
+
+    QString total_latex = "\\frac{"+num_latex+"}{"+den_latex+"}";
+    QString command = "tex2png -c \" $  "+total_latex+" $\" -T -s 2000 -o input.png";
+    MainWindow::Debug(QString("exec: %1").arg(command));
+
+
+    QProcess process;//, QStringList() << docPath
+    process.start(command);
+    process.waitForFinished();
+
+   // process.start("gpicview input.png");
+    //process.waitForFinished();
+    ui->input_label->setPixmap(QPixmap("input.png"));
+}
+
+void FunctionTab::PrettyPrintOutput()
 {
     QString num_latex = "";
     QString den_latex = "";

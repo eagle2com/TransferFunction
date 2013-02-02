@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     functiontab.cpp \
     ctoken.cpp \
-    cpoly.cpp
+    cpoly.cpp \
+    clinearsystem.cpp
 
 HEADERS  += mainwindow.h \
     functiontab.h \
     ctoken.h \
-    cpoly.h
+    cpoly.h \
+    clinearsystem.h
 
 FORMS    += mainwindow.ui \
     functiontab.ui

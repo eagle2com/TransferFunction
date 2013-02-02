@@ -8,6 +8,7 @@ CToken::CToken(double c, int p)
 {
     m_c = c;
     m_p = p;
+    sign = 1;
 }
 
 CToken* CToken::operator* (const CToken& t1)
@@ -31,7 +32,7 @@ CToken* CToken::operator+ (const CToken& t1)
 
 QString CToken::ToLatex(bool first)
 {
-    MainWindow::Debug(QString("c: %1   p: %2").arg(m_c).arg(m_p));
+   // MainWindow::Debug(QString("c: %1   p: %2").arg(m_c).arg(m_p));
     QString ret = "";
     if(abs(m_c) != 1 ||m_p == 0 )
     {

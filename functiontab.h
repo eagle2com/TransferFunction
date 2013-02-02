@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <vector>
 #include "cpoly.h"
+#include "clinearsystem.h"
+#include <vector>
 
 enum STATE{IDLE,POLY,TOKEN_INT,TOKEN_DEC,VAR,EXP};
 enum TRANSITION{DIGIT,SIGN,POINT,OPEN_POLY,CLOSE_POLY,VAR_S,UNUSED};
@@ -76,6 +78,13 @@ private:
      int sign;
 
      void PrettyPrintInput();
+     void PrettyPrintOutput();
+
+     CLinearSystem* linear_system;
+
+     CPoly* m_expanded_numerator;
+     std::vector<CPoly*> m_poly_factors;
+     std::vector<CPoly*> m_poly_denom;
 };
 
 #endif // FUNCTIONTAB_H
