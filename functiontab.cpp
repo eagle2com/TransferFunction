@@ -101,8 +101,8 @@ void FunctionTab::on_pushButton_clicked()
         delete [] factor_constants;
     }
     linear_system->Solve();
-
     delete [] constants;
+    PrettyPrintOutput();
 }
 
 void FunctionTab::PrettyPrintInput()
@@ -139,34 +139,38 @@ void FunctionTab::PrettyPrintInput()
 
 void FunctionTab::PrettyPrintOutput()
 {
-    QString num_latex = "";
-    QString den_latex = "";
-
-    for(int i = 0; i < m_numerator.size(); i++)
+    m_poly_result.clear();
+    QString total_latex= "";
+    double* constants = linear_system->GetResult();
+    int total_const = 0;
+    for(int i = 0; i < m_poly_denom.size(); i++)
     {
-        if(!m_numerator[i]->isEmpty())
-            num_latex.append(m_numerator[i]->ToLatex());
-    }
-    for(int i = 0; i < m_denominator.size(); i++)
-    {
-        if(!m_denominator[i]->isEmpty())
-            den_latex.append(m_denominator[i]->ToLatex());
-    }
-    MainWindow::Debug(QString("num: %1").arg(num_latex));
-    MainWindow::Debug(QString("den: %1").arg(den_latex));
+        int size = m_poly_denom[i]->Order();
+        total_latex.append("\\frac{");
+        CPoly* poly = new CPoly();
+        for(int j = 0; j < m_poly_denom[i]->Order();j++)
+        {
+            CToken *token = new CToken(constants[total_const],j);
+            poly->Add(token);
+            total_const++;
+        }
+        m_poly_result.push_back(poly);
 
-    QString total_latex = "\\frac{"+num_latex+"}{"+den_latex+"}";
-    QString command = "tex2png -c \" $  "+total_latex+" $\" -T -s 2000 -o input.png";
+        total_latex.append(poly->ToLatex());
+        total_latex.append("}{");
+        total_latex.append(m_poly_denom[i]->ToLatex());
+        total_latex.append("}");
+        if(i < (m_poly_denom.size()-1))
+           total_latex.append("+");
+    }
+
+    QString command = "tex2png -c \" $  "+total_latex+" $\" -T -s 2000 -o output.png";
     MainWindow::Debug(QString("exec: %1").arg(command));
-
 
     QProcess process;//, QStringList() << docPath
     process.start(command);
     process.waitForFinished();
-
-   // process.start("gpicview input.png");
-    //process.waitForFinished();
-    ui->input_label->setPixmap(QPixmap("input.png"));
+    ui->output_label->setPixmap(QPixmap("output.png"));
 }
 
 

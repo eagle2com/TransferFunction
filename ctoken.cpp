@@ -34,9 +34,9 @@ QString CToken::ToLatex(bool first)
 {
    // MainWindow::Debug(QString("c: %1   p: %2").arg(m_c).arg(m_p));
     QString ret = "";
-    if(abs(m_c) != 1 ||m_p == 0 )
+    if(fabs(m_c) != 1 ||m_p == 0 )
     {
-        ret.append(QString("%1").arg(abs(m_c)));
+        ret.append(QString("%1").arg(QString::number(fabs(m_c),'g',2)));
     }
    /* if(m_p == 0)
     {

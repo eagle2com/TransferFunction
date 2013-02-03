@@ -9,6 +9,8 @@ CLinearSystem::CLinearSystem(int n, int m)
     m_m = m;
     m_pMatrix = NULL;
     m_pMatrix = (double*)calloc(n*m,sizeof(double));
+    m_result = NULL;
+
     if(m_pMatrix == NULL)
     {
         //QMessageBox("Fatal error","Could not allocate memory for m_pMatrix !!!");
@@ -209,11 +211,21 @@ double* CLinearSystem::Solve()
     Normalize();
     Augment();
     Reduce();
+    Augment();
     PrettyPrint();
-    double* result = new double[m_n];
+    if(m_result != NULL)
+    {
+        delete m_result;
+    }
+    m_result = new double[m_n];
     for(int n = 0; n < m_n; n++)
     {
-        result[n] = Get(n,m_m-1);
+        m_result[n] = Get(n,m_m-1);
     }
-    return result;
+    return m_result;
+}
+
+double* CLinearSystem::GetResult()
+{
+    return m_result;
 }

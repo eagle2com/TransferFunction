@@ -85,6 +85,7 @@ private:
      CPoly* m_expanded_numerator;
      std::vector<CPoly*> m_poly_factors;
      std::vector<CPoly*> m_poly_denom;
+     std::vector<CPoly*> m_poly_result;
 };
 
 #endif // FUNCTIONTAB_H

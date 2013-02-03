@@ -23,12 +23,14 @@ public:
     int N() const;
 
     double* Solve();
+    double* GetResult();
 
 private:
     double *m_pMatrix;
     int m_n, m_m;
     inline void CheckBounds(int n, int m) const;
     inline void CheckLine(int n);
+    double* m_result;
 };
 
 #endif // CLINEARSYSTEM_H
