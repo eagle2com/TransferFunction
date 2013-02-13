@@ -1,6 +1,8 @@
 #ifndef CLINEARSYSTEM_H
 #define CLINEARSYSTEM_H
 
+#include "pch.h"
+
 class CLinearSystem
 {
 public:

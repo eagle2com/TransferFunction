@@ -1,9 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
-#include <QMainWindow>
-
-
+#include "pch.h"
 namespace Ui {
 class MainWindow;
 }

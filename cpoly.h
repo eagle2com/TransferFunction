@@ -1,9 +1,8 @@
 #ifndef CPOLY_H
 #define CPOLY_H
+#include "pch.h"
 
 #include "ctoken.h"
-#include <map>
-#include <list>
 
 typedef std::map<int,CToken*> TokenMap;
 typedef TokenMap::iterator TokenMapIt;

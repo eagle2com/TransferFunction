@@ -1,7 +1,4 @@
 #include "clinearsystem.h"
-#include <malloc.h>
-#include <QMessageBox>
-#include <stdio.h>
 
 CLinearSystem::CLinearSystem(int n, int m)
 {

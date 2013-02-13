@@ -1,6 +1,6 @@
 #include "ctoken.h"
 #include "exception"
-#include <cmath>
+
 
 ///TODO: add CToken garbage collector
 

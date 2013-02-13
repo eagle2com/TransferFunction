@@ -1,8 +1,4 @@
 #include "mainwindow.h"
-#include <QApplication>
-#include <QDebug>
-#include <QProcess>
-#include <QMessageBox>
 
 #include "cpoly.h"
 

@@ -30,3 +30,8 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     images.qrc
+
+HEADERS += \
+    pch.h
+
+PRECOMPILED_HEADER = pch.h

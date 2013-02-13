@@ -1,8 +1,7 @@
 #include "functiontab.h"
 #include "ui_functiontab.h"
 #include "mainwindow.h"
-#include <QDebug>
-#include <QProcess>
+
 
 FunctionTab::FunctionTab(QWidget *parent) :
     QWidget(parent),

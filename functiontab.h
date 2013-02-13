@@ -1,11 +1,8 @@
 #ifndef FUNCTIONTAB_H
 #define FUNCTIONTAB_H
-
-#include <QWidget>
-#include <vector>
+#include "pch.h"
 #include "cpoly.h"
 #include "clinearsystem.h"
-#include <vector>
 
 enum STATE{IDLE,POLY,TOKEN_INT,TOKEN_DEC,VAR,EXP};
 enum TRANSITION{DIGIT,SIGN,POINT,OPEN_POLY,CLOSE_POLY,VAR_S,UNUSED};

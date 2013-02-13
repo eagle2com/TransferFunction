@@ -1,7 +1,6 @@
 #ifndef CTOKEN_H
 #define CTOKEN_H
-
-#include <QString>
+#include "pch.h"
 #include "mainwindow.h"
 
 class CPoly;
