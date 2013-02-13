@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[])
 {
-
+    /*
     CLinearSystem sys1(2,3);
     double matrix[] = {2,1,3,
                        1,1,1};
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     {
         printf("%1.2f ",result[i]);
     }
-    printf("\n");
+    printf("\n");*/
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
